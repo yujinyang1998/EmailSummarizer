@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Summarize - PDF Email Summarizer</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      .summary-card {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        border: none;
+        border-radius: 15px;
+        min-height: 400px;
+      }
+      .loading-spinner {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container">
+        <a class="navbar-brand" href="/">
+          <i class="fas fa-file-pdf me-2"></i>
+          PDF Email Summarizer
+        </a>
+        <div class="navbar-nav ms-auto">
+          <a class="nav-link" href="/">
+            <i class="fas fa-home me-1"></i>
+            Home
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container py-5">
+      <div class="row">
+        <div class="col-lg-8 mx-auto">
+          <div class="text-center mb-4">
+            <h2>
+              <i class="fas fa-file-pdf me-2"></i>
+              Email PDF Summarizer
+            </h2>
+            <p class="text-muted">
+              Generate intelligent summaries from your email.pdf file
+            </p>
+          </div>
+
+          <!-- Controls -->
+          <div class="card mb-4">
+            <div class="card-body">
+              <div class="row align-items-center">
+                <div class="col-md-6">
+                  <h6 class="mb-3">Choose Summary Type:</h6>
+                  <div class="btn-group w-100" role="group">
+                    <input
+                      type="radio"
+                      class="btn-check"
+                      name="summaryType"
+                      id="short"
+                      value="short"
+                    />
+                    <label class="btn btn-outline-primary" for="short">
+                      <i class="fas fa-compress me-1"></i>
+                      Short
+                    </label>
+
+                    <input
+                      type="radio"
+                      class="btn-check"
+                      name="summaryType"
+                      id="medium"
+                      value="medium"
+                      checked
+                    />
+                    <label class="btn btn-outline-primary" for="medium">
+                      <i class="fas fa-align-center me-1"></i>
+                      Medium
+                    </label>
+
+                    <input
+                      type="radio"
+                      class="btn-check"
+                      name="summaryType"
+                      id="long"
+                      value="long"
+                    />
+                    <label class="btn btn-outline-primary" for="long">
+                      <i class="fas fa-expand me-1"></i>
+                      Long
+                    </label>
+                  </div>
+                </div>
+                <div class="col-md-6 text-end">
+                  <button
+                    class="btn btn-primary btn-lg"
+                    onclick="generateSummary()"
+                  >
+                    <i class="fas fa-magic me-2"></i>
+                    Generate Summary
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Summary Output -->
+          <div class="card summary-card">
+            <div
+              class="card-header d-flex justify-content-between align-items-center"
+            >
+              <h5 class="mb-0">
+                <i class="fas fa-file-alt me-2"></i>
+                Email Summary
+              </h5>
+              <div class="loading-spinner">
+                <div class="spinner-border spinner-border-sm" role="status">
+                  <span class="visually-hidden">Generating summary...</span>
+                </div>
+                <small class="ms-2">Processing PDF...</small>
+              </div>
+            </div>
+            <div class="card-body">
+              <div id="summary-content">
+                <div class="text-center text-muted py-5">
+                  <i class="fas fa-robot fa-4x mb-3 opacity-50"></i>
+                  <h5>Ready to Summarize</h5>
+                  <p>Click "Generate Summary" to analyze your email.pdf file</p>
+                  <small class="text-muted">
+                    Make sure email.pdf is in the project directory
+                  </small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Additional Info -->
+          <div class="row mt-4">
+            <div class="col-md-6">
+              <div class="card">
+                <div class="card-body">
+                  <h6><i class="fas fa-info-circle me-2"></i>How it works</h6>
+                  <ol class="small mb-0">
+                    <li>Place your email PDF in the project directory</li>
+                    <li>Choose your preferred summary length</li>
+                    <li>Click "Generate Summary" to process</li>
+                    <li>View the AI-generated summary</li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="card">
+                <div class="card-body">
+                  <h6><i class="fas fa-lightbulb me-2"></i>Tips</h6>
+                  <ul class="small mb-0">
+                    <li><strong>Short:</strong> 2-3 sentence overview</li>
+                    <li><strong>Medium:</strong> Comprehensive summary</li>
+                    <li>
+                      <strong>Long:</strong> Detailed analysis with timeline
+                    </li>
+                    <li>Works best with clear email formatting</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      async function generateSummary() {
+        const summaryContent = document.getElementById("summary-content");
+        const loadingSpinner = document.querySelector(".loading-spinner");
+        const summaryType = document.querySelector(
+          'input[name="summaryType"]:checked'
+        ).value;
+
+        // Show loading state
+        loadingSpinner.style.display = "block";
+        summaryContent.innerHTML = `
+                <div class="text-center py-5">
+                    <div class="spinner-border text-primary mb-3" role="status">
+                        <span class="visually-hidden">Processing...</span>
+                    </div>
+                    <h5>Analyzing Email PDF...</h5>
+                    <p class="text-muted">This may take a few moments</p>
+                </div>
+            `;
+
+        try {
+          const response = await fetch("/api/summarize", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              summary_type: summaryType,
+            }),
+          });
+
+          const result = await response.json();
+
+          if (result.error) {
+            summaryContent.innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>Error:</strong> ${result.error}
+                        </div>
+                        <div class="text-muted small">
+                            <p><strong>Troubleshooting:</strong></p>
+                            <ul>
+                                <li>Make sure email.pdf exists in the project directory</li>
+                                <li>Check that the PDF contains readable text</li>
+                                <li>Verify your OpenAI API key if using AI summaries</li>
+                            </ul>
+                        </div>
+                    `;
+            return;
+          }
+
+          // Display results
+          summaryContent.innerHTML = `
+                    <div class="mb-4">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="fas fa-envelope text-primary me-2"></i>
+                                    <strong>Emails Found:</strong>
+                                    <span class="badge bg-primary ms-2">${
+                                      result.email_count
+                                    }</span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="fas fa-file-alt text-success me-2"></i>
+                                    <strong>Summary Type:</strong>
+                                    <span class="badge bg-success ms-2">${
+                                      result.summary_type
+                                    }</span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center mb-2">
+                                    <i class="fas fa-chart-bar text-info me-2"></i>
+                                    <strong>Text Length:</strong>
+                                    <span class="badge bg-info ms-2">${
+                                      result.raw_text_length
+                                    } chars</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="summary-text">
+                        <h6><i class="fas fa-magic me-2"></i>Generated Summary</h6>
+                        <div class="bg-light p-3 rounded">
+                            ${result.summary
+                              .replace(/\n/g, "<br>")
+                              .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")}
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4">
+                        <button class="btn btn-outline-primary btn-sm" onclick="copyToClipboard()">
+                            <i class="fas fa-copy me-1"></i>
+                            Copy Summary
+                        </button>
+                        <button class="btn btn-outline-secondary btn-sm ms-2" onclick="generateSummary()">
+                            <i class="fas fa-redo me-1"></i>
+                            Regenerate
+                        </button>
+                    </div>
+                `;
+        } catch (error) {
+          console.error("Error:", error);
+          summaryContent.innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Connection Error:</strong> Unable to reach the server.
+                    </div>
+                    <div class="text-muted small">
+                        <p>Please check:</p>
+                        <ul>
+                            <li>The Flask server is running</li>
+                            <li>Your internet connection</li>
+                            <li>The browser console for more details</li>
+                        </ul>
+                    </div>
+                `;
+        } finally {
+          loadingSpinner.style.display = "none";
+        }
+      }
+
+      function copyToClipboard() {
+        const summaryText = document.querySelector(
+          ".summary-text .bg-light"
+        ).innerText;
+        navigator.clipboard.writeText(summaryText).then(() => {
+          // Show success feedback
+          const button = event.target;
+          const originalText = button.innerHTML;
+          button.innerHTML = '<i class="fas fa-check me-1"></i>Copied!';
+          button.classList.remove("btn-outline-primary");
+          button.classList.add("btn-success");
+
+          setTimeout(() => {
+            button.innerHTML = originalText;
+            button.classList.remove("btn-success");
+            button.classList.add("btn-outline-primary");
+          }, 2000);
+        });
+      }
+    </script>
+  </body>
+</html>
