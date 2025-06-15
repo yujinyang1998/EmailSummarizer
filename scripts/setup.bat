@@ -47,15 +47,26 @@ if errorlevel 1 (
     echo [ERROR] Failed to install requirements
     pause
     exit /b 1
-
-    echo Open your browser and go to: http://localhost:5000
-    echo Press Ctrl+C to stop the application
-    echo.
-    python run.py
-) else (
-    %INFO% Setup complete! To run later:
-    echo   1. venv\Scripts\activate.bat
-    echo   2. python run.py
-    echo.
-    pause
 )
+
+:: Create .env file if it doesn't exist
+if not exist .env (
+    echo [INFO] Creating .env file...
+    copy .env_example .env
+    echo [INFO] Please edit .env file to add your OpenAI API key (optional)
+)
+
+:: Create uploads directory
+if not exist uploads mkdir uploads
+
+echo.
+echo [SUCCESS] Setup completed successfully!
+echo.
+echo [INFO] To start the application:
+echo   1. Run: run.bat
+echo   2. Or manually:
+echo      - venv\Scripts\activate.bat
+echo      - python app.py
+echo   3. Open browser to: http://localhost:5000
+echo.
+pause

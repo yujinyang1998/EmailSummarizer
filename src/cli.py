@@ -3,7 +3,7 @@ Command Line Interface for the PDF Email Summarizer.
 """
 
 import os
-from .pdf_email_summarizer import PDFEmailSummarizer
+from .core.pdf_email_summarizer import PDFEmailSummarizer
 
 
 def main():
@@ -12,14 +12,25 @@ def main():
 
     print("PDF Email Summarizer")
     print("===================")
+    print("Features: Parallel processing enabled for faster extraction")
 
     # Check if email.pdf exists
     pdf_path = "email.pdf"
     if not os.path.exists(pdf_path):
         print(f"Error: {pdf_path} not found in current directory")
+        print("You can also use the web interface to upload PDF files.")
         return
 
     print(f"Processing {pdf_path}...")
+
+    # Ask for parallel processing configuration
+    print(f"\nCurrent parallel workers: {summarizer.get_parallel_workers()}")
+    workers_input = input(
+        "Enter number of workers " "(or press Enter to keep current): "
+    ).strip()
+    if workers_input.isdigit():
+        summarizer.set_parallel_workers(int(workers_input))
+        print(f"Updated to {summarizer.get_parallel_workers()} workers")
 
     # Ask for summary type
     print("\nChoose summary type:")

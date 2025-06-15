@@ -1,24 +1,26 @@
 """
-PDF Email Summarizer Package
+EmailSummarizer Package
 
-A tool for extracting and summarizing email content from PDF files.
+A tool for extracting and summarizing email content from PDF, EML, and MSG files.
 """
 
-from .pdf_email_summarizer import PDFEmailSummarizer
-from .text_extractor import PDFTextExtractor, TextCleaner
-from .email_parser import EmailParser
+from .core.pdf_email_summarizer import PDFEmailSummarizer
+from .processors.text_extractor import PDFTextExtractor, TextCleaner
+from .processors.email_parser import EmailParser
+from .processors.email_file_processor import EmailFileProcessor
 
 try:
-    from .ai_summarizer import AISummarizer
+    from .ai.ai_summarizer import AISummarizer
 except ImportError:
     # AI summarizer dependencies not available
     AISummarizer = None
 
-__version__ = "1.0.0"
+__version__ = "2.0.0"
 __all__ = [
     "PDFEmailSummarizer",
     "PDFTextExtractor",
     "TextCleaner",
     "EmailParser",
+    "EmailFileProcessor",
     "AISummarizer",
 ]

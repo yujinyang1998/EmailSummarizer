@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Summarize - PDF Email Summarizer</title>
+    <title>Summarize - Email Summarizer</title>
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -28,8 +28,8 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <div class="container">
         <a class="navbar-brand" href="/">
-          <i class="fas fa-file-pdf me-2"></i>
-          PDF Email Summarizer
+          <i class="fas fa-envelope me-2"></i>
+          Email Summarizer
         </a>
         <div class="navbar-nav ms-auto">
           <a class="nav-link" href="/">
@@ -45,17 +45,97 @@
         <div class="col-lg-8 mx-auto">
           <div class="text-center mb-4">
             <h2>
-              <i class="fas fa-file-pdf me-2"></i>
-              Email PDF Summarizer
+              <i class="fas fa-envelope me-2"></i>
+              Email Summarizer
             </h2>
             <p class="text-muted">
-              Generate intelligent summaries from your email.pdf file
+              Upload a PDF, EML, or MSG file or use the default email.pdf file
             </p>
           </div>
-
           <!-- Controls -->
           <div class="card mb-4">
             <div class="card-body">
+              <!-- File Upload Section -->
+              <div class="mb-4">
+                <h6 class="mb-3">Upload Email File (Optional):</h6>
+                <div class="input-group">
+                  <input
+                    type="file"
+                    class="form-control"
+                    id="emailFile"
+                    name="email_file"
+                    accept=".pdf,.eml,.msg"
+                    onchange="handleFileSelect()"
+                  />
+                  <button
+                    class="btn btn-outline-secondary"
+                    type="button"
+                    onclick="clearFile()"
+                  >
+                    <i class="fas fa-times"></i>
+                    Clear
+                  </button>
+                </div>
+                <div class="form-text">
+                  <i class="fas fa-info-circle me-1"></i>
+                  Select a PDF, EML, or MSG file to upload, or leave empty to
+                  use the default email.pdf file. Maximum file size: 16MB.
+                </div>
+                <div id="file-status" class="mt-2"></div>
+              </div>
+
+              <!-- API Key Section -->
+              <div class="mb-4">
+                <h6 class="mb-3">
+                  <i class="fas fa-key me-2"></i>
+                  OpenAI API Key (Optional):
+                </h6>
+                <div class="input-group">
+                  <span class="input-group-text">
+                    <i class="fas fa-lock"></i>
+                  </span>
+                  <input
+                    type="password"
+                    class="form-control"
+                    id="apiKey"
+                    name="api_key"
+                    placeholder="sk-..."
+                    onchange="handleApiKeyChange()"
+                  />
+                  <button
+                    class="btn btn-outline-secondary"
+                    type="button"
+                    onclick="toggleApiKeyVisibility()"
+                    id="toggleApiBtn"
+                  >
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  <button
+                    class="btn btn-outline-secondary"
+                    type="button"
+                    onclick="clearApiKey()"
+                  >
+                    <i class="fas fa-times"></i>
+                    Clear
+                  </button>
+                </div>
+                <div class="form-text">
+                  <i class="fas fa-info-circle me-1"></i>
+                  Enter your OpenAI API key for enhanced AI-powered summaries.
+                  Leave empty for basic text summarization.
+                  <a
+                    href="https://platform.openai.com/api-keys"
+                    target="_blank"
+                    class="text-decoration-none"
+                  >
+                    <i class="fas fa-external-link-alt me-1"></i>Get API Key
+                  </a>
+                </div>
+                <div id="api-status" class="mt-2"></div>
+              </div>
+
+              <hr />
+
               <div class="row align-items-center">
                 <div class="col-md-6">
                   <h6 class="mb-3">Choose Summary Type:</h6>
@@ -132,9 +212,13 @@
                 <div class="text-center text-muted py-5">
                   <i class="fas fa-robot fa-4x mb-3 opacity-50"></i>
                   <h5>Ready to Summarize</h5>
-                  <p>Click "Generate Summary" to analyze your email.pdf file</p>
+                  <p>
+                    Upload a PDF, EML, or MSG file or click "Generate Summary"
+                    to use the default email.pdf
+                  </p>
                   <small class="text-muted">
-                    Make sure email.pdf is in the project directory
+                    Supports PDF, EML, MSG files up to 16MB with attachment
+                    processing
                   </small>
                 </div>
               </div>
@@ -148,10 +232,15 @@
                 <div class="card-body">
                   <h6><i class="fas fa-info-circle me-2"></i>How it works</h6>
                   <ol class="small mb-0">
-                    <li>Place your email PDF in the project directory</li>
+                    <li>
+                      Upload a PDF, EML, or MSG file or use the default
+                      email.pdf
+                    </li>
                     <li>Choose your preferred summary length</li>
                     <li>Click "Generate Summary" to process</li>
-                    <li>View the AI-generated summary</li>
+                    <li>
+                      View the AI-generated summary with attachment content
+                    </li>
                   </ol>
                 </div>
               </div>
@@ -167,6 +256,8 @@
                       <strong>Long:</strong> Detailed analysis with timeline
                     </li>
                     <li>Works best with clear email formatting</li>
+                    <li>Automatically extracts content from attachments</li>
+                    <li>Supports multiple email formats (PDF, EML, MSG)</li>
                   </ul>
                 </div>
               </div>
@@ -184,6 +275,8 @@
         const summaryType = document.querySelector(
           'input[name="summaryType"]:checked'
         ).value;
+        const fileInput = document.getElementById("emailFile");
+        const apiKeyInput = document.getElementById("apiKey");
 
         // Show loading state
         loadingSpinner.style.display = "block";
@@ -198,14 +291,21 @@
             `;
 
         try {
+          // Create FormData for file upload
+          const formData = new FormData();
+          formData.append("summary_type", summaryType);
+          if (fileInput.files && fileInput.files[0]) {
+            formData.append("email_file", fileInput.files[0]);
+          }
+
+          // Add API key if provided
+          if (apiKeyInput.value.trim()) {
+            formData.append("api_key", apiKeyInput.value.trim());
+          }
+
           const response = await fetch("/api/summarize", {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              summary_type: summaryType,
-            }),
+            body: formData, // Use FormData instead of JSON
           });
 
           const result = await response.json();
@@ -215,12 +315,12 @@
                         <div class="alert alert-danger">
                             <i class="fas fa-exclamation-triangle me-2"></i>
                             <strong>Error:</strong> ${result.error}
-                        </div>
-                        <div class="text-muted small">
+                        </div>                        <div class="text-muted small">
                             <p><strong>Troubleshooting:</strong></p>
                             <ul>
-                                <li>Make sure email.pdf exists in the project directory</li>
+                                <li>Upload a valid PDF file or ensure email.pdf exists in the project directory</li>
                                 <li>Check that the PDF contains readable text</li>
+                                <li>Verify file size is under 16MB</li>
                                 <li>Verify your OpenAI API key if using AI summaries</li>
                             </ul>
                         </div>
@@ -304,7 +404,6 @@
           loadingSpinner.style.display = "none";
         }
       }
-
       function copyToClipboard() {
         const summaryText = document.querySelector(
           ".summary-text .bg-light"
@@ -323,6 +422,116 @@
             button.classList.add("btn-outline-primary");
           }, 2000);
         });
+      }
+      function handleFileSelect() {
+        const fileInput = document.getElementById("emailFile");
+        const fileStatus = document.getElementById("file-status");
+
+        if (fileInput.files && fileInput.files[0]) {
+          const file = fileInput.files[0];
+          const maxSize = 16 * 1024 * 1024; // 16MB
+
+          if (file.size > maxSize) {
+            fileStatus.innerHTML = `
+              <div class="alert alert-danger alert-sm">
+                <i class="fas fa-exclamation-triangle me-1"></i>
+                File too large! Maximum size is 16MB.
+              </div>
+            `;
+            fileInput.value = "";
+            return;
+          } // Check file type
+          const allowedTypes = [
+            "application/pdf",
+            "message/rfc822", // .eml files
+            "application/vnd.ms-outlook", // .msg files
+          ];
+          const allowedExtensions = [".pdf", ".eml", ".msg"];
+          const fileExtension = file.name.toLowerCase().split(".").pop();
+
+          if (
+            !allowedTypes.includes(file.type) &&
+            !allowedExtensions.includes(`.${fileExtension}`)
+          ) {
+            fileStatus.innerHTML = `
+              <div class="alert alert-danger alert-sm">
+                <i class="fas fa-exclamation-triangle me-1"></i>
+                Please select a PDF, EML, or MSG file.
+              </div>
+            `;
+            fileInput.value = "";
+            return;
+          }
+
+          fileStatus.innerHTML = `
+            <div class="alert alert-success alert-sm">
+              <i class="fas fa-check-circle me-1"></i>
+              Selected: ${file.name} (${(file.size / 1024 / 1024).toFixed(
+            2
+          )} MB)
+            </div>
+          `;
+        } else {
+          fileStatus.innerHTML = "";
+        }
+      }
+      function clearFile() {
+        const fileInput = document.getElementById("emailFile");
+        const fileStatus = document.getElementById("file-status");
+
+        fileInput.value = "";
+        fileStatus.innerHTML = "";
+      }
+
+      function handleApiKeyChange() {
+        const apiKeyInput = document.getElementById("apiKey");
+        const apiStatus = document.getElementById("api-status");
+
+        if (apiKeyInput.value.trim()) {
+          if (apiKeyInput.value.startsWith("sk-")) {
+            apiStatus.innerHTML = `
+              <div class="alert alert-success alert-sm">
+                <i class="fas fa-check-circle me-1"></i>
+                API key format looks correct. Enhanced AI summaries will be used.
+              </div>
+            `;
+          } else {
+            apiStatus.innerHTML = `
+              <div class="alert alert-warning alert-sm">
+                <i class="fas fa-exclamation-triangle me-1"></i>
+                API key should start with 'sk-'. Please verify your key.
+              </div>
+            `;
+          }
+        } else {
+          apiStatus.innerHTML = "";
+        }
+      }
+
+      function toggleApiKeyVisibility() {
+        const apiKeyInput = document.getElementById("apiKey");
+        const toggleBtn = document.getElementById("toggleApiBtn");
+
+        if (apiKeyInput.type === "password") {
+          apiKeyInput.type = "text";
+          toggleBtn.innerHTML = '<i class="fas fa-eye-slash"></i>';
+        } else {
+          apiKeyInput.type = "password";
+          toggleBtn.innerHTML = '<i class="fas fa-eye"></i>';
+        }
+      }
+
+      function clearApiKey() {
+        const apiKeyInput = document.getElementById("apiKey");
+        const apiStatus = document.getElementById("api-status");
+
+        apiKeyInput.value = "";
+        apiStatus.innerHTML = "";
+
+        // Reset to password type
+        apiKeyInput.type = "password";
+        document.getElementById("toggleApiBtn").innerHTML =
+          '<i class="fas fa-eye"></i>';
       }
     </script>
   </body>

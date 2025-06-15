@@ -1,233 +1,381 @@
-# PDF Email Summarizer
+# EmailSummarizer
 
-A simple Python web application that reads email content from a PDF file and provides AI-powered summaries.
+**AI-Powered Email Analysis Tool**
+
+Transform your email conversations into concise, actionable summaries with advanced AI analysis.
 
 ## 🚀 Quick Start
 
-### Automatic Setup (Recommended)
+### Option 1: Universal Launcher (Recommended)
+
+```bash
+# Works on Windows, macOS, and Linux - automatically detects platform
+python launch.py
+```
+
+### Option 2: Platform-Specific Scripts
 
 **Windows:**
 
-```bat
-setup.bat
+```bash
+# Run the setup script
+scripts\setup.bat
+
+# Start the application
+scripts\run.bat
 ```
 
-**Linux/macOS:**
+**macOS/Linux:**
 
 ```bash
-chmod +x setup.sh
-./setup.sh
+# Make scripts executable and run
+chmod +x scripts/setup.sh scripts/run.sh
+./scripts/setup.sh && ./scripts/run.sh
 ```
 
-### Running the Application
-
-**Windows:**
-
-```bat
-run.bat
-```
-
-**Linux/macOS:**
+### Option 3: Manual Setup
 
 ```bash
-source venv/bin/activate
+# 1. Install dependencies
+pip install -r requirements.txt
+
+# 2. Start the application
 python app.py
 ```
 
-Then open http://localhost:5000 in your browser.
+### Option 4: Docker
 
-## 📋 Manual Setup
-
-1. **Install dependencies:**
-
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-2. **Set up environment (optional):**
-
-   ```bash
-   cp .env .env.local
-   # Edit .env and add your OpenAI API key for enhanced summaries
-   ```
-
-3. **Place your email PDF:**
-
-   - Put your email PDF file in this directory
-   - Name it `email.pdf`
-
-4. **Run the application:**
-
-   **Using run scripts (after setup):**
-
-   ```bash
-   # Windows (Double-click or run in Command Prompt)
-   run.bat
-
-   # Linux/macOS
-   chmod +x run.sh && ./run.sh
-
-   # Windows PowerShell
-   .\run_app.ps1
-   ```
-
-   **Manual run:**
-
-   ```bash
-   python run.py
-   ```
-
-5. **Open browser:**
-   - Go to `http://localhost:5000`
-   - Click "Start Summarizing"
-   - Choose summary type and generate!
-
-## 📁 What You Need
-
-- **Python 3.8+**
-- **email.pdf** - Your email content in PDF format
-- **OpenAI API key** (optional, for better summaries)
-
-## ✨ Features
-
-- **PDF Processing**: Automatically extracts text from PDF files
-- **Email Thread Detection**: Identifies separate emails in the PDF
-- **Multiple Summary Types**:
-  - **Short**: 2-3 sentence overview
-  - **Medium**: Comprehensive summary with key points
-  - **Long**: Detailed analysis with timeline and action items
-- **AI-Powered**: Uses OpenAI for intelligent summaries (optional)
-- **Simple Interface**: Clean web interface for easy use
-- **Copy & Share**: Easy copy-to-clipboard functionality
-
-## 🛠 How It Works
-
-1. **PDF Text Extraction**: Uses PyPDF2 to extract text from your email PDF
-2. **Email Parsing**: Intelligently splits content into individual emails
-3. **Information Extraction**: Identifies subjects, senders, dates, and content
-4. **AI Summarization**: Generates summaries using OpenAI or basic text processing
-5. **Web Interface**: Displays results in a user-friendly format
-
-## 📊 Summary Types
-
-### Short Summary
-
-- 2-3 sentences
-- Main topic and key outcomes
-- Perfect for quick overviews
-
-### Medium Summary
-
-- Comprehensive overview
-- Key participants and decisions
-- Action items and outcomes
-- Balanced detail level
-
-### Long Summary
-
-- Detailed analysis
-- Complete timeline
-- All participants and their roles
-- Full context and background
-- Comprehensive action items
-
-## 🔧 Configuration
-
-### Basic Setup (No API Key)
-
-- Works with basic text summarization
-- No external dependencies
-- Good for simple email analysis
-
-### Enhanced Setup (With OpenAI)
-
-1. Get an OpenAI API key from [OpenAI Platform](https://platform.openai.com/)
-2. Add it to your `.env` file:
-   ```
-   OPENAI_API_KEY=your_api_key_here
-   ```
-3. Restart the application for enhanced AI summaries
-
-## 📋 File Structure
-
-```
-email_summarizer/
-├── app.py                     # Flask web application
-├── run.py                     # Main entry point
-├── email.pdf                  # Your email PDF (you provide this)
-├── requirements.txt           # Python dependencies
-├── .env.simple               # Environment template
-├── src/
-│   └── email_summarizer.py   # PDF processing and summarization
-└── templates/
-    ├── index.html            # Landing page
-    └── summarize.html        # Main summarization interface
+```bash
+# Build and run with Docker
+docker-compose -f docker/docker-compose.yml up --build
 ```
 
-## 🔍 Troubleshooting
+## 🌟 Universal Launch System
 
-### "email.pdf not found"
+- **One Command**: `python launch.py` works on all platforms
+- **Auto-Detection**: Automatically detects Windows, macOS, or Linux
+- **Smart Setup**: Runs appropriate setup scripts for your platform
+- **Virtual Environment**: Creates and manages virtual environment automatically
+- **Dependency Installation**: Installs requirements.txt automatically
+- **Browser Integration**: Opens browser automatically when ready
 
-- Make sure your PDF file is named exactly `email.pdf`
-- Place it in the same directory as `run.py`
+## 📧 Supported File Formats
 
-### "Could not extract text from PDF"
+- **📄 PDF**: Email conversations exported as PDF documents
+- **📨 EML**: Email files from Outlook, Thunderbird, or other email clients
+- **📬 MSG**: Microsoft Outlook message files (native Python support)
+- **📎 Attachments**: Automatically extracts content from .txt, .html, .pdf files
 
-- Ensure your PDF contains selectable text (not just images)
-- Try a different PDF viewer to verify text is extractable
+## ✨ Key Features
 
-### "No emails found"
+### 🤖 AI-Powered Analysis
 
-- Your PDF might not have recognizable email formatting
-- Try a PDF that clearly shows email headers (From:, To:, Subject:)
+- **Smart Summarization**: Multiple summary types (short, detailed, bullet points)
+- **Enhanced Detail Extraction**: **Automatically highlights** important information
+- **Context Understanding**: Analyzes email threads and conversations
+- **Attachment Processing**: Includes attachment content in analysis
+- **Key Information Highlighting**: **Bold formatting** for dates, amounts, deadlines, and action items
 
-### Blank or poor summaries
+### 📁 Universal File Support
 
-- Add an OpenAI API key for better results
-- Try different summary types
-- Ensure your PDF has clear email content
+- **No Dependencies**: MSG files work without external packages
+- **Robust Parsing**: Handles various email formats and encodings
+- **Error Recovery**: Graceful handling of corrupted or unusual files
 
-## 🎯 Best Results Tips
+### 🌐 Easy Access
 
-1. **Clean PDF Format**: Use PDFs with clear email formatting
-2. **Multiple Emails**: Works best with email threads or multiple emails
-3. **Clear Headers**: Ensure From:, To:, Subject: fields are visible
-4. **Readable Text**: Make sure text is selectable in the PDF
-5. **API Key**: Add OpenAI API key for best summarization quality
+- **Web Interface**: Clean, intuitive browser-based UI
+- **Command Line**: CLI tool for batch processing
+- **Cross-Platform**: Works on Windows, macOS, and Linux
 
-## 💡 Use Cases
+## 🖥️ Usage
 
-- **Email Archive Analysis**: Summarize old email threads
-- **Meeting Follow-ups**: Extract action items from email discussions
-- **Project Reviews**: Understand email-based project communications
-- **Legal Discovery**: Quickly understand email content for legal matters
-- **Customer Service**: Summarize customer email interactions
+### Web Interface
 
-## 🔒 Privacy & Security
+1. Open browser to `http://localhost:5000`
+2. Upload your email file (PDF, EML, or MSG)
+3. Enter OpenAI API key (optional - for enhanced summaries)
+4. Choose summary type and generate
 
-- **Local Processing**: All PDF processing happens on your machine
-- **No Data Storage**: No email content is stored permanently
-- **Optional Cloud**: Only uses OpenAI if you provide an API key
-- **Your Control**: You control what PDFs are processed
+### Command Line
 
-## 📈 Future Enhancements
+```bash
+# Basic CLI (processes email.pdf in current directory)
+python src/cli.py
 
-- Support for multiple PDF files
-- Email attachment analysis
-- Export summaries to different formats
-- Batch processing capabilities
-- Custom summary templates
+# For custom files, use the Python API or web interface
+```
+
+### Python API
+
+```python
+from src.core.pdf_email_summarizer import PDFEmailSummarizer
+
+summarizer = PDFEmailSummarizer()
+result = summarizer.summarize_emails_from_file("email.eml", "short")
+print(result["summary"])
+```
+
+## 🛠️ Installation
+
+### Prerequisites
+
+- Python 3.8 or higher
+- pip (Python package manager)
+
+### Dependencies
+
+All core dependencies are installed automatically:
+
+```bash
+pip install -r requirements.txt
+```
+
+**Core packages:**
+
+- Flask (web interface)
+- PyPDF2 (PDF processing)
+- python-dotenv (configuration)
+- OpenAI (AI summarization - optional)
+- markdownify (HTML to text conversion)
+- Pillow (image processing support)
+
+**Additional packages included:**
+
+- extract-msg (enhanced MSG file support)
+- pytesseract (OCR text extraction)
+- email-reply-parser (email parsing)
+- pdf2image (PDF to image conversion)
+- python-magic (file type detection)
+
+**Optional enhancements:**
+
+```bash
+# For advanced HTML processing
+pip install beautifulsoup4
+```
+
+## 📁 Project Structure
+
+```
+EmailSummarizer/
+├── 🚀 app.py                    # Main Flask application
+├── 🌟 launch.py                 # Universal cross-platform launcher
+├── 📋 requirements.txt          # Python dependencies
+├── 🔧 .env_example             # Environment configuration template
+├── 📁 src/                     # Source code
+│   ├── 🎯 core/                # Main business logic
+│   ├── 🔄 processors/          # File processing engines
+│   ├── 🤖 ai/                  # AI integration
+│   └── 💻 cli.py               # Command line interface
+├── 🎨 templates/               # Web UI templates
+├── 🧪 tests/                   # Test suite
+├── 🐳 docker/                  # Docker deployment
+└── 📜 scripts/                 # Setup and utility scripts
+```
+
+## ⚙️ Configuration
+
+### Environment Variables
+
+Create a `.env` file (copy from `.env_example`):
+
+```bash
+# OpenAI API Key (optional - for enhanced summaries)
+OPENAI_API_KEY=your_openai_api_key_here
+
+# Flask Configuration
+FLASK_ENV=production
+UPLOAD_FOLDER=uploads
+```
+
+### API Keys
+
+- **OpenAI API**: Required for AI-powered summaries
+- **Without API**: Basic summaries still work using built-in algorithms
+
+## 🚀 Deployment
+
+### Local Development
+
+```bash
+# Quick start with universal launcher
+python launch.py
+
+# OR direct launch
+python app.py
+# Access at http://localhost:5000
+```
+
+### Production with Docker
+
+```bash
+cd docker
+docker-compose up -d
+# Access at http://localhost:8080
+```
+
+### Cloud Deployment
+
+The application is ready for deployment on:
+
+- **Heroku**: Use provided Dockerfile
+- **AWS**: Compatible with ECS/EC2
+- **Google Cloud**: Works with Cloud Run
+- **Azure**: Compatible with Container Instances
+
+## 🧪 Testing
+
+### Run Tests
+
+```bash
+# Run all tests
+python -m pytest tests/
+
+# Run specific test
+python -m pytest tests/test_email_formats.py
+
+# Test with coverage
+python -m pytest --cov=src tests/
+```
+
+### Manual Testing
+
+```bash
+# Test CLI (requires email.pdf in current directory)
+python src/cli.py
+
+# Test web interface
+python app.py
+# Navigate to http://localhost:5000
+```
+
+## 🔧 Development
+
+### Setup Development Environment
+
+```bash
+# Clone repository
+git clone <repository-url>
+cd EmailSummarizer
+
+# Quick start (recommended)
+python launch.py
+
+# OR manual setup:
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+venv\Scripts\activate     # Windows
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Run in development mode
+export FLASK_ENV=development  # Linux/Mac
+set FLASK_ENV=development     # Windows
+python app.py
+```
+
+### Code Structure
+
+- **`src/core/`**: Main email processing logic
+- **`src/processors/`**: File format handlers (EML, MSG, PDF)
+- **`src/ai/`**: AI integration and summarization
+- **`templates/`**: HTML templates for web interface
+- **`scripts/`**: Utility and setup scripts
+
+## 📋 Troubleshooting
+
+### Common Issues
+
+**"Module not found" errors:**
+
+```bash
+pip install -r requirements.txt
+```
+
+**MSG files not processing:**
+
+```bash
+# MSG files should work natively, but for enhanced support:
+pip install extract-msg
+# (Note: extract-msg is already included in requirements.txt)
+```
+
+**Port already in use:**
+
+```bash
+# Kill process using port 5000
+netstat -ano | findstr :5000
+taskkill /PID <process_id> /F
+```
+
+**Permission errors:**
+
+```bash
+# Run as administrator (Windows)
+# Use sudo (Linux/Mac)
+```
+
+### Debug Mode
+
+```bash
+export FLASK_DEBUG=1
+python app.py
+```
+
+## 🤝 Contributing
+
+### Development Workflow
+
+1. Fork the repository
+2. Create feature branch: `git checkout -b feature-name`
+3. Make changes and test
+4. Commit: `git commit -m "Add feature"`
+5. Push: `git push origin feature-name`
+6. Create Pull Request
+
+### Code Guidelines
+
+- Follow PEP 8 style guidelines
+- Add docstrings to functions
+- Include tests for new features
+- Update README for user-facing changes
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## 🆘 Support
 
-If you encounter issues:
+### Getting Help
 
-1. Check that `email.pdf` exists and contains text
-2. Verify Python dependencies are installed
-3. Look at the browser console for error messages
-4. Ensure the Flask server is running on port 5000
+- **Issues**: Submit GitHub issues for bugs or feature requests
+- **Documentation**: Check this README for common questions
+- **Development**: Review code comments and docstrings
+
+### Known Limitations
+
+- **Large Files**: Performance may decrease with very large email files (>10MB)
+- **Complex Formatting**: Some heavily formatted emails may lose styling
+- **Attachment Types**: Only text-based attachments are processed for content
+
+## 🎯 Roadmap
+
+### Upcoming Features
+
+- **Batch Processing**: Handle multiple email files at once
+- **Export Options**: PDF, Word, and Excel export formats
+- **Advanced Analytics**: Email sentiment analysis and threading
+- **Integration APIs**: Connect with email clients and CRM systems
+
+### Performance Improvements
+
+- **Streaming Processing**: Handle larger files more efficiently
+- **Caching**: Reduce processing time for repeated operations
+- **Parallel Processing**: Multi-threaded file processing
 
 ---
 
-**Simple. Fast. Effective.**
-Transform your email PDFs into actionable summaries in seconds!
+**Ready to transform your email analysis workflow? Get started in minutes!** 🚀
